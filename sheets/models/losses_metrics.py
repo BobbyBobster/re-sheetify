@@ -40,8 +40,9 @@ class PositionalEmbeddingAdder(keras.layers.Layer):
 
 @keras.saving.register_keras_serializable()
 def flattened_fbeta_score(y_true, y_pred):
-    y_true_flat = keras.ops.reshape(y_true, [-1, 88 * 1000])
-    y_pred_flat = keras.ops.reshape(y_pred, [-1, 88 * 1000])
+    area = int(N_PIANO_KEYS * (CLIP_DURATION * PIANO_ROLL_FS))
+    y_true_flat = keras.ops.reshape(y_true, [-1, area])
+    y_pred_flat = keras.ops.reshape(y_pred, [-1, area])
     return keras.metrics.binary_accuracy(y_true_flat, y_pred_flat)
 
 
