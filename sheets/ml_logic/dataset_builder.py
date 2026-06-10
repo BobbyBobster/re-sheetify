@@ -27,7 +27,7 @@ def build_dataset(
     model_type: ModelType = "basic",
     spectrogram_type: SpectrogramType = "cqt",
     split: SplitType = "train",
-    year_limit: int | list[int] | None = None,
+    year_limit: list[int] | None = None,
     count_limit: int | None = None,
     batch_size=16,
     shuffle_buffer: int = 200,

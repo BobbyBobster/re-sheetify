@@ -14,7 +14,7 @@ from sheets.params import *
 def get_pairs(
     data_path=DATA_PATH,
     split: SplitType = "train",
-    year_limit: int | list[int] | None = None,
+    year_limit: list[int] | None = None,
     count_limit: int | None = None,
 ) -> list[dict]:
     """

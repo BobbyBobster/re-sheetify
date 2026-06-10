@@ -20,7 +20,7 @@ def create_cache():
 
 def train(
     model_type: ModelType = "basic",
-    year_limit: int | list[int] | None = None,
+    year_limit: list[int] | None = None,
     count_limit: int | None = None,
     batch_size=32,
     patience=10,
@@ -52,8 +52,13 @@ def train(
         batch_size=batch_size,
     )
 
+    if year_limit is None:
+        year_limit = "all"
+
     timestamp = time.strftime("%Y%m%d-%H%M%S")
-    checkpoint_filepath = f"./models/{model_type}_y{year_limit}_{timestamp}.keras"
+    checkpoint_filepath = (
+        f"./models/{model_type}_y{''.join(map(str, year_limit))}_{timestamp}.keras"
+    )
     checkpoint_cb = tf.keras.callbacks.ModelCheckpoint(
         filepath=checkpoint_filepath, save_best_only=True
     )
