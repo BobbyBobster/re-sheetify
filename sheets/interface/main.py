@@ -37,6 +37,7 @@ def train(
         print("❌ No model type to train selected. Exiting.")
         raise SystemExit
 
+    print(f"📌 Initializing 'train' dataset (data will be loaded lazily).")
     train_ds = build_dataset(
         model_type=model_type,
         split="train",
@@ -44,6 +45,7 @@ def train(
         count_limit=count_limit,
         batch_size=batch_size,
     )
+    print(f"📌 Initializing 'validation' dataset (data will be loaded lazily).")
     val_ds = build_dataset(
         model_type=model_type,
         split="validation",

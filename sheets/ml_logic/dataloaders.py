@@ -60,7 +60,7 @@ def get_pairs(
                 "midi_path": str(data_path / "midis" / "midi.mid"),
                 "duration": 26,
             }
-        ]
+        ] * 5
 
     print(f"✅ [Metadata] {split}: {len(pairs)} files found.")
     return pairs
@@ -105,10 +105,12 @@ def load_CQT(
     """Load a (precomputed) CQT spectrogram"""
     cqt_path = _precomputed_path("cqt", pair, start_sec)
     if cqt_path.exists():
-        # print(f'🔋 Dataloader: Precomputed CQT found : {pair["audio_path"]=}')
+        # print(f'🔋 Dataloader: Precomputed CQT found: {pair["audio_path"]=} at {start_sec=}')
         cqt = np.load(cqt_path).astype(np.float32)
     else:
-        print(f'🪫 Dataloader: No precomputed CQT : {pair["audio_path"]=}')
+        print(
+            f'🪫 Dataloader: No precomputed CQT: {pair["audio_path"]=} at {start_sec=}'
+        )
         cqt = preprocess_spectrogram(
             pair["audio_path"],
             preprocessor=CQTPreprocessor(),
@@ -174,9 +176,11 @@ def load_roll(
     """Load a (precomputed) pianoroll."""
     roll_path = _precomputed_path("roll", pair, start_sec)
     if roll_path.exists():
-        # print(f'🔋 Dataloader: Precomputed pianrolls found : {pair["midi_path"]=}')
+        # print(f'🔋 Dataloader: Precomputed pianrolls found: {pair["midi_path"]=} at {start_sec=}')
         roll = np.load(roll_path).astype(np.float32)
     else:
-        print(f'🪫 Dataloader: No precomputed pianorolls : {pair["midi_path"]=}')
+        print(
+            f'🪫 Dataloader: No precomputed pianorolls: {pair["midi_path"]=} at {start_sec=}'
+        )
         roll = create_pianoroll(midi_path=pair["midi_path"], start_sec=start_sec)
     return roll
