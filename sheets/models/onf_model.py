@@ -81,15 +81,16 @@ def compile_model(
     model: keras.Model,
     learning_rate=6e-4,
 ) -> keras.Model:
-
+    onset_wbc = WeightedBinaryCrossentropy(pos_weight=4000)
+    frame_wbc = WeightedBinaryCrossentropy(pos_weight=200)
+    optimizer = keras.optimizers.Adam(learning_rate=learning_rate)
     fba = FlattenedBinaryAccuracy()
 
     model.compile(
-        optimizer=keras.optimizers.Adam(learning_rate=learning_rate),
-        # TODO: Test with Weighted BCE
+        optimizer=optimizer,
         loss={
-            "onset": "binary_crossentropy",
-            "frame": "binary_crossentropy",
+            "onset": onset_wbc,
+            "frame": frame_wbc,
         },
         loss_weights={
             "onset": 1.0,
