@@ -24,9 +24,16 @@ precompute_cqt:
 precompute_midi:
 	python scripts/precompute_midi.py
 
+
 ### TESTS ###
 test_all:
 	PYTHONDONTWRITEBYTECODE=1 pytest -v --color=yes
+
+test_gcp_setup:
+	@pytest \
+	tests/test_gcp_setup.py::TestGcpSetup::test_setup_key_env \
+	tests/test_gcp_setup.py::TestGcpSetup::test_setup_key_path \
+	tests/test_gcp_setup.py::TestGcpSetup::test_code_get_project
 
 
 ### DATA SOURCES ACTIONS ###
