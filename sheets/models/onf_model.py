@@ -95,7 +95,6 @@ def compile_model(
             "onset": 1.0,
             "frame": 1.0,
         },
-        # TODO: Add Flattened F score metrics
         metrics={
             "onset": [flattened_fbeta_score, fba],
             "frame": [flattened_fbeta_score, fba],
