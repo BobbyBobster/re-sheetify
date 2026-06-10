@@ -50,4 +50,5 @@ clean:
 	@rm -f **/.DS_Store
 	@rm -f **/*Zone.Identifier
 	@rm -f **/.ipynb_checkpoints
+	@rm -rf **/.pytest_cache
 	@rm -rf .sheetify_cache
