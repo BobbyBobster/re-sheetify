@@ -16,6 +16,14 @@ ifeq ($(TRAINING_ENV), cloud)
 endif
 
 
+precompute_all: precompute_cqt precompute_midi
+
+precompute_cqt:
+	python scripts/precompute_cqt.py
+
+precompute_midi:
+	python scripts/precompute_midi.py
+
 ### TESTS ###
 test_all:
 	PYTHONDONTWRITEBYTECODE=1 pytest -v --color=yes
