@@ -1,0 +1,3 @@
+[tool.ruff]
+# Ignore star import violations globally
+lint.ignore = ["F403", "F405"]
