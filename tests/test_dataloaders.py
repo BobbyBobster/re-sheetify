@@ -17,6 +17,7 @@ def load_metadata_json():
         metadata = json.load(fp)
     yield metadata
 
+
 @pytest.mark.usefixtures("load_metadata_json")
 class TestDataloaders:
     @pytest.mark.filterwarnings("ignore::UserWarning")
@@ -27,14 +28,14 @@ class TestDataloaders:
         metadata = load_metadata_json
 
         tcs = [
-            {'split': 'train', 'year_limit': [2006, 2014]},
-            {'split': 'validation', 'year_limit': [2018]},
-            {'split': 'test', 'year_limit': None},
-            {'split': 'train', 'year_limit': None},
-            {'split': 'validation', 'year_limit': [2008]},
-            {'split': 'test', 'year_limit': [1000]},
-            {'split': 'train', 'year_limit': None, 'count_limit': 5},
-            {'split': 'train', 'year_limit': [2006, 2008, 2014], 'count_limit': 50},
+            {"split": "train", "year_limit": [2006, 2014]},
+            {"split": "validation", "year_limit": [2018]},
+            {"split": "test", "year_limit": None},
+            {"split": "train", "year_limit": None},
+            {"split": "validation", "year_limit": [2008]},
+            {"split": "test", "year_limit": [1000]},
+            {"split": "train", "year_limit": None, "count_limit": 5},
+            {"split": "train", "year_limit": [2006, 2008, 2014], "count_limit": 50},
         ]
 
         meta_df = pd.DataFrame(metadata)
@@ -43,16 +44,33 @@ class TestDataloaders:
             dl = get_pairs(**tc)
 
             if tc["year_limit"] is None:
-                tc["year_limit"] = [2004, 2006, 2008, 2009, 2011, 2013, 2014, 2015, 2017, 2018]
+                tc["year_limit"] = [
+                    2004,
+                    2006,
+                    2008,
+                    2009,
+                    2011,
+                    2013,
+                    2014,
+                    2015,
+                    2017,
+                    2018,
+                ]
             subset = meta_df[meta_df["split"] == tc["split"]]
             subset = subset[meta_df["year"].isin(tc["year_limit"])]
             pd_pairs = []
             for _, row in subset.iterrows():
-                pd_pairs.append({
-                    "audio_path": str(DATA_PATH / 'mp3s' / row['audio_filename'].replace('.wav', '.mp3')),
-                    "midi_path": str(DATA_PATH / 'midis' / row["midi_filename"]),
-                    "duration": row["duration"],
-                })
+                pd_pairs.append(
+                    {
+                        "audio_path": str(
+                            DATA_PATH
+                            / "mp3s"
+                            / row["audio_filename"].replace(".wav", ".mp3")
+                        ),
+                        "midi_path": str(DATA_PATH / "midis" / row["midi_filename"]),
+                        "duration": row["duration"],
+                    }
+                )
 
             count_limit = tc.get("count_limit")
             if count_limit is not None:

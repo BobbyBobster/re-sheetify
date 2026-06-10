@@ -35,7 +35,7 @@ def get_pairs(
     keys = [k for k in year_filt if k in split_filt]
     # Get filenames for filtered keys
     audio_filenames = [v for k, v in metadata["audio_filename"].items() if k in keys]
-    midi_filenames =  [v for k, v in metadata["midi_filename"].items() if k in keys]
+    midi_filenames = [v for k, v in metadata["midi_filename"].items() if k in keys]
     durations = [v for k, v in metadata["duration"].items() if k in keys]
 
     pairs = [
@@ -44,7 +44,9 @@ def get_pairs(
             "midi_path": str(data_path / "midis" / m_fname),
             "duration": duration,
         }
-        for a_fname, m_fname, duration in zip(audio_filenames, midi_filenames, durations)
+        for a_fname, m_fname, duration in zip(
+            audio_filenames, midi_filenames, durations
+        )
     ]
 
     if count_limit is not None:
