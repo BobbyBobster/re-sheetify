@@ -52,6 +52,16 @@ def get_pairs(
     if count_limit is not None:
         pairs = pairs[:count_limit]
 
+    # TODO: Remove after testing
+    if year_limit == [0]:
+        pairs = [
+            {
+                "audio_path": str(data_path / "mp3s" / "midi.mp3"),
+                "midi_path": str(data_path / "midis" / "midi.mid"),
+                "duration": 26,
+            }
+        ]
+
     print(f"✅ [Metadata] {split}: {len(pairs)} files found.")
     return pairs
 
