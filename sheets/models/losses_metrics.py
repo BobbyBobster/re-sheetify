@@ -37,6 +37,10 @@ class PositionalEmbeddingAdder(keras.layers.Layer):
         )
         return config
 
+    def build(self, input_shape):
+        # Explicitly build the sub-layer so Keras natively tracks its weights
+        self.pos_embedding_layer.build(input_shape)
+
 
 @keras.saving.register_keras_serializable()
 def flattened_fbeta_score(y_true, y_pred):
