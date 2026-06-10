@@ -10,6 +10,7 @@ repos:
       - id: check-merge-conflict
       - id: debug-statements
 
+  # Black-like formatting
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: v0.9.0
     hooks:
@@ -22,3 +23,9 @@ repos:
     hooks:
       - id: mypy
         additional_dependencies: [types-requests]
+
+  # Docker linting
+  - repo: https://github.com/coatl-dev/hadolint-coatl
+    rev: 2.14.0
+    hooks:
+      - id: hadolint
