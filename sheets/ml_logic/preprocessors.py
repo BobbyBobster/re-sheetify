@@ -12,7 +12,7 @@ class Preprocessor(ABC):
         pass
 
 
-class CQTPreprocessor:
+class CQTPreprocessor(Preprocessor):
     def compute(self, audio: np.ndarray) -> np.ndarray:
         cqt = librosa.cqt(
             audio,
@@ -36,7 +36,7 @@ class CQTPreprocessor:
         return cqt_db[:, :, np.newaxis].astype(np.float32)
 
 
-class MELPreprocessor:
+class MELPreprocessor(Preprocessor):
     def compute(self, audio: np.ndarray) -> np.ndarray:
         mel_spec = librosa.feature.melspectrogram(
             y=audio,
