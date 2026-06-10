@@ -1,5 +1,4 @@
 import tensorflow as tf
-import numpy as np
 import time
 
 from sheets.ml_logic.dataset_builder import build_dataset
@@ -37,7 +36,7 @@ def train(
         print("❌ No model type to train selected. Exiting.")
         raise SystemExit
 
-    print(f"📌 Initializing 'train' dataset (data will be loaded lazily).")
+    print("📌 Initializing 'train' dataset (data will be loaded lazily).")
     train_ds = build_dataset(
         model_type=model_type,
         split="train",
@@ -45,7 +44,7 @@ def train(
         count_limit=count_limit,
         batch_size=batch_size,
     )
-    print(f"📌 Initializing 'validation' dataset (data will be loaded lazily).")
+    print("📌 Initializing 'validation' dataset (data will be loaded lazily).")
     val_ds = build_dataset(
         model_type=model_type,
         split="validation",
@@ -55,11 +54,11 @@ def train(
     )
 
     if year_limit is None:
-        year_limit = "all"
+        year_limit = "all"  # type: ignore
 
     timestamp = time.strftime("%Y%m%d-%H%M%S")
     checkpoint_filepath = (
-        f"./models/{model_type}_y{''.join(map(str, year_limit))}_{timestamp}.keras"
+        f"./models/{model_type}_y{''.join(map(str, year_limit))}_{timestamp}.keras"  # type: ignore
     )
     checkpoint_cb = tf.keras.callbacks.ModelCheckpoint(
         filepath=checkpoint_filepath, save_best_only=True
@@ -68,7 +67,7 @@ def train(
 
     earlystopping_cb = tf.keras.callbacks.EarlyStopping(patience=patience)
 
-    history = model.fit(
+    history = model.fit(  # noqa: F841
         x=train_ds,
         validation_data=val_ds,
         epochs=epochs,
@@ -83,8 +82,6 @@ def train(
     if MODEL_TARGET == "local":
         model_path = os.path.join("./models", f"{timestamp}.keras")
         model.save(model_path)
-
-    fbeta = np.min(history.history.get("fbeta", 0))
 
     print("✅ train() done \n")
 
