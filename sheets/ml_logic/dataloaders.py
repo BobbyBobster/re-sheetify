@@ -136,12 +136,18 @@ def _pad_or_trim_2d(arr: np.ndarray, length: int, axis: int = 1) -> np.ndarray:
     return np.pad(arr, pad_width)
 
 
-def create_pianoroll(
-    midi_path,
-    start_sec,
+def get_pianoroll(
+    midi_path: str,
 ):
     midi = pretty_midi.PrettyMIDI(midi_path)
     roll = midi.get_piano_roll(fs=PIANO_ROLL_FS)
+    return roll
+
+
+def slice_pianoroll(
+    roll: np.ndarray,
+    start_sec: float,
+) -> np.ndarray:
     frame_start = int(start_sec * PIANO_ROLL_FS)
     frame_end = frame_start + int(CLIP_DURATION * PIANO_ROLL_FS)
     roll = roll[:, frame_start:frame_end]
@@ -149,6 +155,15 @@ def create_pianoroll(
     roll = (roll > 0).astype(np.float32)
     target_frames = int(CLIP_DURATION * PIANO_ROLL_FS)
     roll = _pad_or_trim_2d(roll, target_frames, axis=1)
+    return roll
+
+
+def create_pianoroll(
+    midi_path: str,
+    start_sec: float,
+) -> np.ndarray:
+    roll = get_pianoroll(midi_path)
+    roll = slice_pianoroll(roll, start_sec)
     return roll
 
 
