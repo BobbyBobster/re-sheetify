@@ -88,3 +88,11 @@ def compile_model(
 
 def train_model():
     pass
+
+
+def evaluate_model():
+    pass
+
+
+def predict():
+    pass
