@@ -4,11 +4,11 @@ from sheets.models.losses_metrics import *
 from sheets.params import *
 
 
-def conv_stack(x):
-    x = keras.layers.Conv2D(64, (3, 3), activation="relu", padding="same")(x)
+def conv_stack(x, n_kernel=64):
+    x = keras.layers.Conv2D(n_kernel, (3, 3), activation="relu", padding="same")(x)
     x = keras.layers.BatchNormalization()(x)
 
-    x = keras.layers.Conv2D(128, (3, 3), activation="relu", padding="same")(x)
+    x = keras.layers.Conv2D(n_kernel * 2, (3, 3), activation="relu", padding="same")(x)
     x = keras.layers.BatchNormalization()(x)
 
     x = keras.layers.MaxPooling2D((1, 2))(x)
@@ -36,10 +36,11 @@ def initialize_model(
     n_frames=N_FRAMES,
     n_keys=N_PIANO_KEYS,
     n_time=int(CLIP_DURATION * PIANO_ROLL_FS),
+    n_kernel=64,
 ) -> keras.Model:
     inputs = keras.Input(shape=(n_bins, n_frames, 1))
 
-    onset_x = conv_stack(inputs)
+    onset_x = conv_stack(inputs, n_kernel)
     onset_x = squeeze_freq(onset_x)
     onset_x = keras.layers.Bidirectional(keras.layers.LSTM(128, return_sequences=True))(
         onset_x
@@ -50,7 +51,7 @@ def initialize_model(
         activation="sigmoid",
     )(onset_x)
 
-    frame_x = conv_stack(inputs)
+    frame_x = conv_stack(inputs, n_kernel)
     frame_x = squeeze_freq(frame_x)
 
     frame_seq = keras.layers.Dense(
