@@ -9,31 +9,41 @@ def initialize_model(
     n_frames=N_FRAMES,
     n_keys=N_PIANO_KEYS,
     n_time=int(CLIP_DURATION * PIANO_ROLL_FS),
+    n_kernel=32,
 ) -> keras.Model:
     inputs = keras.Input(shape=(n_bins, n_frames, 1))
 
+    bin_dim = n_bins
+    frame_dim = n_frames
+
     # --- CNN Block ---
-    x = keras.layers.Conv2D(32, (3, 3), activation="relu", padding="same")(inputs)
+    x = keras.layers.Conv2D(n_kernel, (3, 3), activation="relu", padding="same")(inputs)
     x = keras.layers.BatchNormalization()(x)
-    x = keras.layers.Conv2D(64, (3, 3), activation="relu", padding="same")(x)
+    n_kernel *= 2
+    x = keras.layers.Conv2D(n_kernel, (3, 3), activation="relu", padding="same")(x)
     x = keras.layers.BatchNormalization()(x)
     x = keras.layers.MaxPooling2D((2, 2))(x)
+    bin_dim //= 2
+    frame_dim //= 2
     x = keras.layers.Dropout(0.3)(x)
 
-    x = keras.layers.Conv2D(128, (3, 3), activation="relu", padding="same")(x)
+    n_kernel *= 2
+    x = keras.layers.Conv2D(n_kernel, (3, 3), activation="relu", padding="same")(x)
     x = keras.layers.BatchNormalization()(x)
     x = keras.layers.MaxPooling2D((2, 2))(x)
+    bin_dim //= 2
+    frame_dim //= 2
     # Tensor output shape here is (None, 21, 78, 256)
     x = keras.layers.Dropout(0.3)(x)
 
     # --- Collapse PITCH ---
     x = keras.layers.Lambda(
         lambda t: keras.ops.mean(t, axis=1),
-        output_shape=(78, 128),
+        output_shape=(frame_dim, n_kernel),
     )(x)
 
     # --- Add Positional Tracking for the Transformer ---
-    x = PositionalEmbeddingAdder(input_dim=400, output_dim=128)(x)
+    x = PositionalEmbeddingAdder(input_dim=frame_dim, output_dim=n_kernel)(x)
 
     # --- Transformer Block ---
     x = keras.layers.MultiHeadAttention(num_heads=4, key_dim=32)(x, x)
