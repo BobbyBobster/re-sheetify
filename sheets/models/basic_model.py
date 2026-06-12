@@ -4,17 +4,11 @@ from sheets.models.losses_metrics import *
 from sheets.params import *
 
 
-def initialize_model(
-    n_bins=N_BINS,
-    n_frames=N_FRAMES,
-    n_keys=N_PIANO_KEYS,
-    n_time=int(CLIP_DURATION * PIANO_ROLL_FS),
-    n_kernel=32,
-) -> keras.Model:
-    inputs = keras.Input(shape=(n_bins, n_frames, 1))
+def initialize_model(n_kernel=32) -> keras.Model:
+    inputs = keras.Input(shape=(N_BINS, N_FRAMES, 1))
 
-    bin_dim = n_bins
-    frame_dim = n_frames
+    bin_dim = N_BINS
+    frame_dim = N_FRAMES
 
     # --- CNN Block ---
     x = keras.layers.Conv2D(n_kernel, (3, 3), activation="relu", padding="same")(inputs)
@@ -51,6 +45,7 @@ def initialize_model(
 
     # --- Learn the Time Mapping (No Blur) ---
     # Dynamically maps 78 audio steps up to 1000 piano-roll time targets.
+    n_time = int(CLIP_DURATION * PIANO_ROLL_FS)
     x = keras.layers.Permute((2, 1))(x)  # Shape: (None, 256, 78)
     x = keras.layers.Dense(n_time // 4)(x)  # Shape: (None, 256, 1000)
     x = keras.layers.Permute((2, 1))(x)  # Shape: (None, 1000, 256)
@@ -59,7 +54,7 @@ def initialize_model(
 
     # --- Output Block ---
     # Map 256 features directly to your 88 individual keys across every step.
-    x = keras.layers.Dense(n_keys)(x)  # Shape: (None, 1000, 88)
+    x = keras.layers.Dense(N_PIANO_KEYS)(x)  # Shape: (None, 1000, 88)
 
     # Rearrange dimensions to deliver your target formatting: (None, 88, 1000)
     outputs = keras.layers.Permute((2, 1))(x)
@@ -72,7 +67,10 @@ def initialize_model(
     return model
 
 
-def compile_model(model: keras.Model, learning_rate=LEARNING_RATE) -> keras.Model:
+def compile_model(
+    model: keras.Model,
+    learning_rate=LEARNING_RATE,
+) -> keras.Model:
     wbc = WeightedBinaryCrossentropy()
     optimizer = keras.optimizers.Adam(learning_rate=learning_rate)
     fba = FlattenedBinaryAccuracy()

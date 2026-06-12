@@ -31,14 +31,8 @@ def map_to_target_time(x, n_time, name):
     return x
 
 
-def initialize_model(
-    n_bins=N_BINS,
-    n_frames=N_FRAMES,
-    n_keys=N_PIANO_KEYS,
-    n_time=int(CLIP_DURATION * PIANO_ROLL_FS),
-    n_kernel=64,
-) -> keras.Model:
-    inputs = keras.Input(shape=(n_bins, n_frames, 1))
+def initialize_model(n_kernel=64) -> keras.Model:
+    inputs = keras.Input(shape=(N_BINS, N_FRAMES, 1))
 
     onset_x = conv_stack(inputs, n_kernel)
     onset_x = squeeze_freq(onset_x)
@@ -47,7 +41,7 @@ def initialize_model(
     )
 
     onset_seq = keras.layers.Dense(
-        n_keys,
+        N_PIANO_KEYS,
         activation="sigmoid",
     )(onset_x)
 
@@ -55,7 +49,7 @@ def initialize_model(
     frame_x = squeeze_freq(frame_x)
 
     frame_seq = keras.layers.Dense(
-        n_keys,
+        N_PIANO_KEYS,
         activation="sigmoid",
     )(frame_x)
 
@@ -64,8 +58,9 @@ def initialize_model(
         keras.layers.LSTM(128, return_sequences=True)
     )(combined)
 
-    frame_seq = keras.layers.Dense(n_keys)(combined)
+    frame_seq = keras.layers.Dense(N_PIANO_KEYS)(combined)
 
+    n_time = int(CLIP_DURATION * PIANO_ROLL_FS)
     onset_output = map_to_target_time(onset_seq, n_time, "onset")
     frame_output = map_to_target_time(frame_seq, n_time, "frame")
 
@@ -80,7 +75,7 @@ def initialize_model(
 
 def compile_model(
     model: keras.Model,
-    learning_rate=6e-4,
+    learning_rate=LEARNING_RATE,
 ) -> keras.Model:
     onset_wbc = WeightedBinaryCrossentropy(pos_weight=4000)
     frame_wbc = WeightedBinaryCrossentropy(pos_weight=200)
