@@ -1,6 +1,7 @@
 ### PACKAGE ACTIONS ###
 run_train_basic:
 ifeq ($(TRAINING_ENV), local)
+	@rm -rf .sheetify_cache
 	python -c 'from sheets.interface.main import train; train(model_type="basic", year_limit=[0], count_limit=5, epochs=10)'
 endif
 ifeq ($(TRAINING_ENV), cloud)
@@ -9,6 +10,7 @@ endif
 
 run_train_onf:
 ifeq ($(TRAINING_ENV), local)
+	@rm -rf .sheetify_cache
 	python -c 'from sheets.interface.main import train; train(model_type="onf", year_limit=[0], count_limit=5, epochs=10)'
 endif
 ifeq ($(TRAINING_ENV), cloud)
@@ -51,4 +53,6 @@ clean:
 	@rm -f **/*Zone.Identifier
 	@rm -f **/.ipynb_checkpoints
 	@rm -rf **/.pytest_cache
+	@rm -rf **/.mypy_cache
+	@rm -rf **/.ruff_cache
 	@rm -rf .sheetify_cache
