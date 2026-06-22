@@ -18,6 +18,10 @@ ifeq ($(TRAINING_ENV), cloud)
 endif
 
 
+create_dataset:
+	python -c 'from sheets.interface.main import save_dataset; save_dataset(model_type="basic", year_limit=[0], count_limit=5, epochs=10)'
+
+
 precompute_all: precompute_cqt precompute_midi
 
 precompute_cqt:
