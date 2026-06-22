@@ -4,7 +4,7 @@ from sheets.models.losses_metrics import *
 from sheets.params import *
 
 
-def conv_stack(x, n_kernel=64):
+def conv_stack(x, n_kernel):
     x = keras.layers.Conv2D(n_kernel, (3, 3), activation="relu", padding="same")(x)
     x = keras.layers.BatchNormalization()(x)
 
@@ -31,7 +31,7 @@ def map_to_target_time(x, n_time, name):
     return x
 
 
-def initialize_model(n_kernel=64) -> keras.Model:
+def initialize_model(n_kernel=N_KERNEL) -> keras.Model:
     inputs = keras.Input(shape=(N_BINS, N_FRAMES, 1))
 
     onset_x = conv_stack(inputs, n_kernel)

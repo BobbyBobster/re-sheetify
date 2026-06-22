@@ -27,7 +27,7 @@ def train(
 ):
     print(f"📌 Initializing {model_type} model type.")
     if model_type == "basic":
-        model = basic_model.initialize_model()
+        model = basic_model.initialize_model(n_kernel=16)
         model = basic_model.compile_model(model)
     elif model_type == "onf":
         model = onf_model.initialize_model(n_kernel=16)

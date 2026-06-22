@@ -4,7 +4,7 @@ from sheets.models.losses_metrics import *
 from sheets.params import *
 
 
-def initialize_model(n_kernel=32) -> keras.Model:
+def initialize_model(n_kernel=N_KERNEL) -> keras.Model:
     inputs = keras.Input(shape=(N_BINS, N_FRAMES, 1))
 
     bin_dim = N_BINS

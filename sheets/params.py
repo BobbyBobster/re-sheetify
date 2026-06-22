@@ -5,6 +5,7 @@ from typing import TypeAlias, Literal
 ### CONSTANTS ###
 CLIP_DURATION = 10.0  # Input/Output duration in seconds
 PIANO_ROLL_FS = 100  # Frames per second in input/output
+N_KERNEL = 8
 DATA_PATH = Path("./data")
 CACHE_PATH = Path("./.sheetify_cache")
 SAMPLE_RATE = 16_000  # Hz
