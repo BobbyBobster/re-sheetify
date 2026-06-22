@@ -1,7 +1,11 @@
 import keras
+import logging
 
 from sheets.models.losses_metrics import *
 from sheets.params import *
+
+
+logger = logging.getLogger(__name__)
 
 
 def conv_stack(x, n_kernel):
@@ -69,7 +73,7 @@ def initialize_model(n_kernel=N_KERNEL) -> keras.Model:
         outputs=[onset_output, frame_output],
     )
 
-    print("✅ Onsets & Frames model initialized")
+    logger.info("✅ Onsets & Frames model initialized")
     return model
 
 
@@ -98,7 +102,7 @@ def compile_model(
         },
     )
 
-    print("✅ Model compiled")
+    logger.info("✅ Model compiled")
     return model
 
 

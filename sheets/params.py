@@ -29,6 +29,7 @@ SplitType: TypeAlias = Literal["train", "validation", "test"]
 
 ### VARIABLES ###
 MODEL_TARGET = os.environ.get("MODEL_TARGET")
+TRAINING_ENV = os.environ.get("TRAINING_ENV", "local")
 # Local data storage
 # ML_DIR = os.environ.get("ML_DIR", "./mlops")
 # LOCAL_DATA_PATH = Path(ML_DIR) / "data"

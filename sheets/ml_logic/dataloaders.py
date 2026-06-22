@@ -1,5 +1,6 @@
 import json
 from pathlib import Path
+import logging
 
 import numpy as np
 import librosa
@@ -8,6 +9,9 @@ import pretty_midi
 
 from sheets.ml_logic.preprocessors import Preprocessor, CQTPreprocessor
 from sheets.params import *
+
+
+logger = logging.getLogger(__name__)
 
 
 def get_pairs(
@@ -61,7 +65,7 @@ def get_pairs(
             }
         ] * 5
 
-    print(f"✅ [Metadata] {split}: {len(pairs)} files found.")
+    logger.info(f"✅ [Metadata] {split}: {len(pairs)} files found.")
     return pairs
 
 
@@ -104,10 +108,10 @@ def load_CQT(
     """Load a (precomputed) CQT spectrogram"""
     cqt_path = _precomputed_path("cqt", pair, start_sec)
     if cqt_path.exists():
-        # print(f'🔋 Dataloader: Precomputed CQT found: {pair["audio_path"]=} at {start_sec=}')
+        # logger.info(f'🔋 Dataloader: Precomputed CQT found: {pair["audio_path"]=} at {start_sec=}')
         cqt = np.load(cqt_path).astype(np.float32)
     else:
-        print(
+        logger.info(
             f'🪫 Dataloader: No precomputed CQT: {pair["audio_path"]=} at {start_sec=}'
         )
         cqt = preprocess_spectrogram(
@@ -175,10 +179,10 @@ def load_roll(
     """Load a (precomputed) pianoroll."""
     roll_path = _precomputed_path("rolls", pair, start_sec)
     if roll_path.exists():
-        # print(f'🔋 Dataloader: Precomputed pianrolls found: {pair["midi_path"]=} at {start_sec=}')
+        # logger.info(f'🔋 Dataloader: Precomputed pianrolls found: {pair["midi_path"]=} at {start_sec=}')
         roll = np.load(roll_path).astype(np.float32)
     else:
-        print(
+        logger.info(
             f'🪫 Dataloader: No precomputed pianorolls: {pair["midi_path"]=} at {start_sec=}'
         )
         roll = create_pianoroll(midi_path=pair["midi_path"], start_sec=start_sec)

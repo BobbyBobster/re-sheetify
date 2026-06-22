@@ -1,7 +1,11 @@
 import keras
+import logging
 
 from sheets.models.losses_metrics import *
 from sheets.params import *
+
+
+logger = logging.getLogger(__name__)
 
 
 def initialize_model(n_kernel=N_KERNEL) -> keras.Model:
@@ -62,7 +66,7 @@ def initialize_model(n_kernel=N_KERNEL) -> keras.Model:
 
     model = keras.Model(inputs, outputs)
 
-    print("✅ Model initialized")
+    logger.info("✅ Model initialized")
 
     return model
 
@@ -81,7 +85,7 @@ def compile_model(
         metrics=[flattened_fbeta_score, fba],
     )
 
-    print("✅ Model compiled")
+    logger.info("✅ Model compiled")
 
     return model
 
