@@ -5,7 +5,6 @@ import numpy as np
 import librosa
 import pretty_midi
 
-from typing import Literal
 
 from sheets.ml_logic.preprocessors import Preprocessor, CQTPreprocessor
 from sheets.params import *
@@ -174,7 +173,7 @@ def load_roll(
     start_sec: float,
 ) -> np.ndarray:
     """Load a (precomputed) pianoroll."""
-    roll_path = _precomputed_path("roll", pair, start_sec)
+    roll_path = _precomputed_path("rolls", pair, start_sec)
     if roll_path.exists():
         # print(f'🔋 Dataloader: Precomputed pianrolls found: {pair["midi_path"]=} at {start_sec=}')
         roll = np.load(roll_path).astype(np.float32)

@@ -3,6 +3,7 @@ Precompute CQT spectrogram clips. Run from repo root:
 python scripts/precompute_cqt.py
 """
 
+import sys
 import math
 from pathlib import Path
 
@@ -16,7 +17,7 @@ from sheets.params import *
 
 with warnings.catch_warnings():
     warnings.simplefilter("ignore")
-    from google.cloud import storage
+    from google.cloud import storage  # type: ignore
 
 
 BUCKET_NAME = "sheetify_bobbybobster"
@@ -39,17 +40,16 @@ async def upload_file(blob, path, semaphore):
             print(f"❌ Failed to upload {path}: {e}")
 
 
-async def async_main(bucket):
+async def async_main(bucket, run_local=False):
     semaphore = asyncio.Semaphore(10)
     tasks = []
-    clip_samples = int(SAMPLE_RATE * CLIP_DURATION)
 
     # for year in [2004, 2006, 2008, 2009, 2011, 2013, 2014, 2015, 2017, 2018]:
-    for year in [2004]:
+    for year in [0]:
         print(f"📥 Precomputing year {year}")
         for split in ("train", "validation", "test"):
             print(f"📥 Precomputing {split} splits")
-            for pair in dl.get_pairs(DATA_ROOT, year_limit=year, split=split):
+            for pair in dl.get_pairs(DATA_ROOT, year_limit=[year], split=split):
                 n_clips = math.floor(pair["duration"] / CLIP_DURATION)
                 for i in range(n_clips):
                     path = cqt_path(pair["audio_path"], i)
@@ -60,7 +60,7 @@ async def async_main(bucket):
 
                     start_sec = i * CLIP_DURATION
                     spectrogram = dl.preprocess_spectrogram(
-                        audio_path=str(path),
+                        audio_path=str(pair["audio_path"]),
                         preprocessor=preprocessor,
                         start_sec=start_sec,
                     )
@@ -68,8 +68,9 @@ async def async_main(bucket):
                     path.parent.mkdir(parents=True, exist_ok=True)
                     np.save(path, spectrogram)
 
-                    blob = bucket.blob(str(path))
-                    tasks.append(upload_file(blob, path, semaphore))
+                    if not run_local:
+                        blob = bucket.blob(str(path))
+                        tasks.append(upload_file(blob, path, semaphore))
 
             await asyncio.gather(*tasks)
             tasks.clear()
@@ -81,4 +82,5 @@ if __name__ == "__main__":
     storage_client = storage.Client()
     bucket = storage_client.bucket(bucket_name)
     print(f"{bucket_name=}")
-    asyncio.run(async_main(bucket))
+    run_local = len(sys.argv) > 1
+    asyncio.run(async_main(bucket, run_local=run_local))

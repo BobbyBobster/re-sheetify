@@ -26,6 +26,12 @@ precompute_cqt:
 precompute_midi:
 	python scripts/precompute_midi.py
 
+precompute_cqt_local:
+	python scripts/precompute_cqt.py local
+
+precompute_midi_local:
+	python scripts/precompute_midi.py local
+
 
 ### TESTS ###
 test_all:
