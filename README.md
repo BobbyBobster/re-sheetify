@@ -4,7 +4,7 @@ Ground-up rebuild of the [Sheetify project](https://github.com/emilegeagea/sheet
 This rebuild is meant to make maintenance of the project easier. Hence some components are re-architected and changed.
 Also this will allow us to more easily train different instances of the model to compare performance.
 
-<img src="/../screenshots/screenshots/streamlit-output.png" alt="Sheetify webapp in use" width="200"/>
+<img src="/../screenshots/screenshots/streamlit-output.png" alt="Sheetify webapp in use"/>
 <br>
 App home: https://sheetify-frontend-614562267249.us-west1.run.app
 
