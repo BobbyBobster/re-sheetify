@@ -17,9 +17,9 @@ def create_cache():
     # Run dataset creation
     # Save to GCS, Service Account needs Storage Object Admin on bucket
     # gcs_output_path = "gs://your-bucket-name/preprocessed_dataset"
-    # print(f"⏳ Saving dataset to {gcs_output_path}...")
+    # logger.info(f"⏳ Saving dataset to {gcs_output_path}...")
     # tf.data.Dataset.save(dataset, gcs_output_path)
-    # print("✅ Dataset successfully saved!")
+    # logger.info("✅ Dataset successfully saved!")
     pass
 
 
