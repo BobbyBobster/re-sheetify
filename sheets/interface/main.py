@@ -1,11 +1,17 @@
 import tensorflow as tf
 import time
+import logging
+
+from sheets.config import setup_logging
 from pathlib import Path
 
 from sheets.ml_logic.dataset_builder import build_dataset
 import sheets.models.basic_model as basic_model
 import sheets.models.onf_model as onf_model
 from sheets.params import *
+
+setup_logging()
+logger = logging.getLogger(__name__)
 
 DATASET_ROOT: Path = Path("./dataset_cache")
 
@@ -21,9 +27,9 @@ def save_dataset(
     # Run dataset creation
     # Save to GCS, Service Account needs Storage Object Admin on bucket
     # gcs_output_path = "gs://your-bucket-name/preprocessed_dataset"
-    # print(f"⏳ Saving dataset to {gcs_output_path}...")
+    # logger.info(f"⏳ Saving dataset to {gcs_output_path}...")
     # tf.data.Dataset.save(dataset, gcs_output_path)
-    # print("✅ Dataset successfully saved!")
+    # logger.info("✅ Dataset successfully saved!")
 
     train_ds = build_dataset(
         model_type=model_type,
@@ -44,7 +50,7 @@ def train(
     patience=10,
     epochs=200,
 ):
-    print(f"📌 Initializing {model_type} model type.")
+    logger.info(f"📌 Initializing {model_type} model type.")
     if model_type == "basic":
         model = basic_model.initialize_model()
         model = basic_model.compile_model(model)
@@ -52,16 +58,16 @@ def train(
         model = onf_model.initialize_model()
         model = onf_model.compile_model(model)
     else:
-        print("❌ No model type to train selected. Exiting.")
+        logger.error("❌ No model type to train selected. Exiting.")
         raise SystemExit
 
     train_ds_path = Path(DATASET_ROOT) / "train_ds_dir"
     if train_ds_path.exists():
-        print("🔋 Saved dataset found: train_ds")
+        logger.info("🔋 Saved dataset found: train_ds")
         train_ds = tf.data.Dataset.load(str(train_ds_path))
     else:
-        print("🪫 No dataset found: train_ds")
-        print("📌 Initializing 'train' dataset (data will be loaded lazily).")
+        logger.info("🪫 No dataset found: train_ds")
+        logger.info("📌 Initializing 'train' dataset (data will be loaded lazily).")
         train_ds = build_dataset(
             model_type=model_type,
             split="train",
@@ -72,11 +78,13 @@ def train(
 
     val_ds_path = Path(DATASET_ROOT) / "val_ds_dir"
     if val_ds_path.exists():
-        print("🔋 Saved dataset found: val_ds")
+        logger.info("🔋 Saved dataset found: val_ds")
         val_ds = tf.data.Dataset.load(str(val_ds_path))
     else:
-        print("🪫 No dataset found: val_ds")
-        print("📌 Initializing 'validation' dataset (data will be loaded lazily).")
+        logger.info("🪫 No dataset found: val_ds")
+        logger.info(
+            "📌 Initializing 'validation' dataset (data will be loaded lazily)."
+        )
         val_ds = build_dataset(
             model_type=model_type,
             split="validation",
@@ -95,7 +103,7 @@ def train(
     checkpoint_cb = tf.keras.callbacks.ModelCheckpoint(
         filepath=checkpoint_filepath, save_best_only=True
     )
-    print(f"📌 Saving checkpoints at '{checkpoint_filepath}'")
+    logger.info(f"📌 Saving checkpoints at '{checkpoint_filepath}'")
 
     earlystopping_cb = tf.keras.callbacks.EarlyStopping(patience=patience)
 
@@ -115,7 +123,7 @@ def train(
         model_path = os.path.join("./models", f"{timestamp}.keras")
         model.save(model_path)
 
-    print("✅ train() done \n")
+    logger.info("✅ train() done \n")
 
 
 def predict():

@@ -1,15 +1,18 @@
 import pandas as pd
 import json
+import logging
 
 import pytest
 
 from sheets.ml_logic.dataloaders import get_pairs
 from sheets.params import *
 
+logger = logging.getLogger(__name__)
+
 
 @pytest.fixture(scope="class")
 def load_metadata_json():
-    print("\n[Setup] Loading metadata file...")
+    logger.info("\n[Setup] Loading metadata file...")
     metadata_path = DATA_PATH / "maestro-v3.0.0.json"
     if not metadata_path.exists():
         raise FileNotFoundError(f"Metadata not found at {metadata_path}")

@@ -1,12 +1,15 @@
 import math
+import logging
 
 import tensorflow as tf
 import numpy as np
 
-from typing import Literal
 
 import sheets.ml_logic.dataloaders as dl
 from sheets.params import *
+
+
+logger = logging.getLogger(__name__)
 
 
 def create_onf_roll(
@@ -52,7 +55,7 @@ def build_dataset(
 
                     yield spectrogram, roll
                 except Exception as e:
-                    print(
+                    logger.warning(
                         f"[Warning] Skipping {pair['audio_path']} at {split_start} seconds: {e}"
                     )
                     continue
