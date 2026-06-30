@@ -21,8 +21,6 @@ def save_dataset(
     year_limit: list[int] | None = None,
     count_limit: int | None = None,
     batch_size=32,
-    patience=10,
-    epochs=200,
 ):
     # Run dataset creation
     # Save to GCS, Service Account needs Storage Object Admin on bucket
@@ -38,8 +36,19 @@ def save_dataset(
         count_limit=count_limit,
         batch_size=batch_size,
     )
-    train_ds_path = DATASET_ROOT / "train_ds_dir"
+    val_ds = build_dataset(
+        model_type=model_type,
+        split="train",
+        year_limit=year_limit,
+        count_limit=count_limit,
+        batch_size=batch_size,
+    )
+
+    train_ds_path = SAVED_DATASET_ROOT / f"{model_type}_train_ds"
+    val_ds_path = SAVED_DATASET_ROOT / f"{model_type}_val_ds"
+
     train_ds.save(str(train_ds_path))
+    val_ds.save(str(val_ds_path))
 
 
 def train(
@@ -61,7 +70,7 @@ def train(
         logger.error("❌ No model type to train selected. Exiting.")
         raise SystemExit
 
-    train_ds_path = Path(DATASET_ROOT) / "train_ds_dir"
+    train_ds_path = Path(SAVED_DATASET_ROOT) / f"{model_type}_train_ds"
     if train_ds_path.exists():
         logger.info("🔋 Saved dataset found: train_ds")
         train_ds = tf.data.Dataset.load(str(train_ds_path))
@@ -76,7 +85,7 @@ def train(
             batch_size=batch_size,
         )
 
-    val_ds_path = Path(DATASET_ROOT) / "val_ds_dir"
+    val_ds_path = Path(SAVED_DATASET_ROOT) / f"{model_type}_val_ds"
     if val_ds_path.exists():
         logger.info("🔋 Saved dataset found: val_ds")
         val_ds = tf.data.Dataset.load(str(val_ds_path))

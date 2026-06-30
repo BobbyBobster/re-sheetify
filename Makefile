@@ -2,7 +2,7 @@
 run_train_basic:
 ifeq ($(TRAINING_ENV), local)
 	@rm -rf .sheetify_cache
-	python -c 'from sheets.interface.main import train; train(model_type="basic", year_limit=[0], count_limit=5, epochs=10)'
+	python -c 'from sheets.interface.main import train; train(model_type="basic", year_limit=[0], epochs=10)'
 endif
 ifeq ($(TRAINING_ENV), cloud)
 	python -c 'from sheets.interface.main import train; train(model_type="basic")'
@@ -11,17 +11,31 @@ endif
 run_train_onf:
 ifeq ($(TRAINING_ENV), local)
 	@rm -rf .sheetify_cache
-	python -c 'from sheets.interface.main import train; train(model_type="onf", year_limit=[0], count_limit=5, epochs=10)'
+	python -c 'from sheets.interface.main import train; train(model_type="onf", year_limit=[0], epochs=10)'
 endif
 ifeq ($(TRAINING_ENV), cloud)
 	python -c 'from sheets.interface.main import train; train(model_type="onf")'
 endif
 
 
-create_dataset:
-	python -c 'from sheets.interface.main import save_dataset; save_dataset(model_type="basic", year_limit=[0], count_limit=5, epochs=10)'
+run_save_dataset_basic:
+ifeq ($(TRAINING_ENV), local)
+	python -c 'from sheets.interface.main import save_dataset; save_dataset(model_type="basic", year_limit=[0], count_limit=5)'
+endif
+ifeq ($(TRAINING_ENV), cloud)
+	python -c 'from sheets.interface.main import save_dataset; save_dataset(model_type="basic")'
+endif
+
+run_save_dataset_onf:
+	python -c 'from sheets.interface.main import save_dataset; save_dataset(model_type="onf", year_limit=[0], count_limit=5)'
 
 
+symlink_and_save_basic: symlink_bucket run_save_dataset_basic
+
+
+
+
+### PRECOMPUTE TRANSFORMATIONS ###
 precompute_all: precompute_cqt precompute_midi
 
 precompute_cqt:
@@ -49,6 +63,12 @@ test_gcp_setup:
 
 
 ### DATA SOURCES ACTIONS ###
+# Requires bucket to be mounted at /mnt/gcs
+symlink_bucket:
+	-rm -rf /code/data
+	ln -s /mnt/gcs/data /code/data
+	ls -Al /code/data
+	ls -AlH /code/data
 
 
 ### CLEANING ###
