@@ -95,10 +95,10 @@ def build_dataset(
         output_signature=output_signature,
     )
 
-    cache_dir = CACHE_PATH
-    cache_dir.mkdir(parents=True, exist_ok=True)
-    cache_name = Path(f"cache_{split}_{year_limit}_{model_type}_{spectrogram_type}")
-    dataset = dataset.cache(str(cache_dir / cache_name))
+    # cache_dir = CACHE_PATH
+    # cache_dir.mkdir(parents=True, exist_ok=True)
+    # cache_name = Path(f"cache_{split}_{year_limit}_{model_type}_{spectrogram_type}")
+    # dataset = dataset.cache(str(cache_dir / cache_name))
 
     # if split == "train":
     # dataset = dataset.shuffle(shuffle_buffer)

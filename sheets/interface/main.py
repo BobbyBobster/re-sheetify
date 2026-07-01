@@ -13,8 +13,6 @@ from sheets.params import *
 setup_logging()
 logger = logging.getLogger(__name__)
 
-DATASET_ROOT: Path = Path("./dataset_cache")
-
 
 def save_dataset(
     model_type: ModelType = "basic",
@@ -22,13 +20,6 @@ def save_dataset(
     count_limit: int | None = None,
     batch_size=32,
 ):
-    # Run dataset creation
-    # Save to GCS, Service Account needs Storage Object Admin on bucket
-    # gcs_output_path = "gs://your-bucket-name/preprocessed_dataset"
-    # logger.info(f"⏳ Saving dataset to {gcs_output_path}...")
-    # tf.data.Dataset.save(dataset, gcs_output_path)
-    # logger.info("✅ Dataset successfully saved!")
-
     train_ds = build_dataset(
         model_type=model_type,
         split="train",
@@ -38,7 +29,7 @@ def save_dataset(
     )
     val_ds = build_dataset(
         model_type=model_type,
-        split="train",
+        split="validation",
         year_limit=year_limit,
         count_limit=count_limit,
         batch_size=batch_size,
